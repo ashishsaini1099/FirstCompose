@@ -10,7 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.example.demo.firstcompose.screens.QuoteDetail
+import com.example.demo.firstcompose.screens.QuoteDetailScreen
 import com.example.demo.firstcompose.screens.QuoteListScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         CoroutineScope(Dispatchers.IO).launch {
-            delay(5000)
+            delay(3000)
             DataManager.loadAssetsFromFile(this@MainActivity)
         }
 
@@ -29,34 +29,36 @@ class MainActivity : ComponentActivity() {
             App()
         }
     }
-}
 
-@Composable
-fun App() {
-    if (DataManager.isDataLoaded.value) {
+    @Composable
+    fun App() {
+        if (DataManager.isDataLoaded.value) {
 
-        if (DataManager.currentPage.value == Pages.LISTING){
-            QuoteListScreen(data = DataManager.data) {
-                DataManager.switchPages(it)
+            if (DataManager.currentPage.value == Pages.LISTING) {
+                QuoteListScreen(data = DataManager.data) {
+                    DataManager.switchPages(it)
+                }
+            } else {
+                DataManager.currentQuote?.let { QuoteDetailScreen(quote = it) }
             }
-        }else{
-            DataManager.currentQuote?.let { QuoteDetail(quote = it) }
-        }
 
-    } else {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.fillMaxSize(1f)
-        ) {
-            Text(text = "Loading....",
-                style = MaterialTheme.typography.bodyMedium
-            )
+        } else {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier.fillMaxSize(1f)
+            ) {
+                Text(
+                    text = "Loading....",
+                    style = MaterialTheme.typography.bodyMedium
+                )
 
+            }
         }
     }
+
 }
 
- enum class Pages{
+enum class Pages {
     LISTING, DETAIL
 }
 
